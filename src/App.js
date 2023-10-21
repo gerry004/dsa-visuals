@@ -1,7 +1,11 @@
+import DoublyLinkedList from "./components/DoublyLinkedList";
+import Navbar from "./components/Navbar";
+
 function App() {
   return (
     <div>
-      Hello World
+      <Navbar />
+      <DoublyLinkedList />
     </div>
   );
 }
