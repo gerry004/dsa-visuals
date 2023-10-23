@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 class DoublyLinkedListNode {
   constructor(data, next, prev) {
@@ -9,6 +9,12 @@ class DoublyLinkedListNode {
 }
 
 function DoublyLinkedList() {
+  const insertAtBeginningRef = useRef(null)
+  const insertAtEndRef = useRef(null)
+  const insertBeforeDataRef = useRef(null)
+  const insertBeforePositionRef = useRef(null)
+  const deleteAtRef = useRef(null)
+
   const [tail, setTail] = useState(null)
   const [head, setHead] = useState(null)
   const [render, setRender] = useState(false)
@@ -42,7 +48,9 @@ function DoublyLinkedList() {
     currentTail = newNode
   }
 
-  const insertAtBeginning = (data) => {
+  const insertAtBeginning = () => {
+    const data = parseInt(insertAtBeginningRef.current.value)
+    if (isNaN(data)) return
     if (currentHead === null && currentTail === null) {
       insertIntoEmptyList(data)
     } else {
@@ -52,9 +60,12 @@ function DoublyLinkedList() {
     }
     setHead(currentHead)
     setTail(currentTail)
+    insertAtBeginningRef.current.value = ""
   }
 
-  const insertAtEnd = (data) => {
+  const insertAtEnd = () => {
+    const data = parseInt(insertAtEndRef.current.value)
+    if (isNaN(data)) return
     if (currentHead === null && currentTail === null) {
       insertIntoEmptyList(data)
     } else {
@@ -64,9 +75,13 @@ function DoublyLinkedList() {
     }
     setHead(currentHead)
     setTail(currentTail)
+    insertAtEndRef.current.value = ""
   }
 
-  const insertBefore = (data, position) => {
+  const insertBefore = () => {
+    const data = parseInt(insertBeforeDataRef.current.value)
+    const position = parseInt(insertBeforePositionRef.current.value)
+    if (isNaN(data) || isNaN(position)) return
     if (head === null && tail === null) {
       insertIntoEmptyList(data)
     } else {
@@ -90,9 +105,14 @@ function DoublyLinkedList() {
     }
     setHead(currentHead)
     setTail(currentTail)
+    setRender(!render)
+    insertBeforeDataRef.current.value = ""
+    insertBeforePositionRef.current.value = ""
   }
 
-  const deleteAt = (position) => {
+  const deleteAt = () => {
+    const position = parseInt(deleteAtRef.current.value)
+    if (isNaN(position)) return
     if (currentHead === null && currentTail === null) return
     let currentNode = currentHead
     let currentPos = 0
@@ -117,6 +137,8 @@ function DoublyLinkedList() {
     }
     setHead(currentHead)
     setTail(currentTail)
+    setRender(!render)
+    deleteAtRef.current.value = ""
   }
 
   const reverse = () => {
@@ -156,7 +178,6 @@ function DoublyLinkedList() {
           currentNode.prev.next = currentNode.next
           currentNode.next.prev = currentNode.prev
           currentNode = currentNode.next
-          setRender(!render)
         }
       } else {
         data.add(currentNode.data)
@@ -165,6 +186,7 @@ function DoublyLinkedList() {
     }
     setHead(currentHead)
     setTail(currentTail)
+    setRender(!render)
   }
 
   const print = () => {
@@ -189,25 +211,69 @@ function DoublyLinkedList() {
       currentNode = currentNode.next
       currentPos++
     }
-    return <ul className="flex flex-row flex-wrap flex-shrink">{elements}</ul>
+    return <ul className="grid grid-cols-6">{elements}</ul>
   }
 
   return (
     <div className="p-4 flex flex-col justify-center items-center">
-      <h2 className="p-6">Doubly Linked List</h2>
-      <div className="flex flex-row w-[70vw]">
-        <div className="flex flex-wrap w-[70%]">
+      <div className="flex flex-row lg:w-[70vw]">
+        <div className="flex flex-col w-[70%]">
+          <h3 className="m-2">Doubly Linked List</h3>
           {renderList()}
         </div>
-        <div className="flex flex-col w-[30%]">
+        <div className="flex flex-col flex-wrap max-w-[30%]">
           <h3 className="m-2">Functions</h3>
-          <button onClick={() => insertAtBeginning(100)}>Insert at Beginning</button>
-          <button onClick={() => insertAtEnd(2)}>Insert at End</button>
-          <button onClick={() => insertBefore(100, 0)}>Insert Before</button>
-          <button onClick={() => deleteAt(0)}>Delete At</button>
-          <button onClick={reverse}>Reverse</button>
-          <button onClick={makeUnique}>Make Unique</button>
-          <button onClick={print}>Print</button>
+          <div className="flex my-2">
+            <input
+              className="w-[50%] border-2 border-primary rounded-l-md p-2"
+              ref={insertAtBeginningRef}
+              placeholder="data"
+              type="number"
+            />
+            <button className="flex-1 p-2 bg-primary text-white rounded-r-md" onClick={insertAtBeginning}>Insert at Start</button>
+          </div>
+          <div className="flex">
+            <input
+              className="w-[50%] border-2 border-primary rounded-l-md p-2"
+              ref={insertAtEndRef}
+              placeholder="data"
+              type="number"
+            />
+            <button className="flex-1 p-2 bg-primary text-white rounded-r-md" onClick={insertAtEnd}>Insert at End</button>
+          </div>
+          <div className="flex my-2">
+            <input
+              className=" w-[25%] border-2 border-primary rounded-l-md p-2"
+              ref={insertBeforeDataRef}
+              placeholder="data"
+              type="number"
+            />
+            <input
+              className="w-[25%] border-y-2 border-primary p-2"
+              ref={insertBeforePositionRef}
+              placeholder="position"
+              type="number"
+            />
+            <button className="flex-1 p-2 bg-primary text-white rounded-r-md" onClick={insertBefore}>Insert Before</button>
+          </div>
+          <div className="flex my-2">
+            <input
+              className="w-[50%] border-2 rounded-l-md border-primary p-2"
+              ref={deleteAtRef}
+              placeholder="position"
+              type="number"
+            />
+            <button className="flex-1 p-2 bg-primary text-white rounded-r-md" onClick={deleteAt}>Delete At</button>
+          </div>
+          <div className="flex items-center mb-2">
+            <button className="flex-1 p-2 bg-primary text-white rounded-md" onClick={reverse}>Reverse</button>
+          </div>
+          <div className="flex items-center mb-2">
+            <button className="flex-1 p-2 bg-primary text-white rounded-md" onClick={makeUnique}>Make Unique</button>
+          </div>
+          <div className="flex items-center mb-2">
+            <button className="flex-1 p-2 bg-primary text-white rounded-md" onClick={print}>Print</button>
+          </div>
         </div>
       </div>
     </div>
